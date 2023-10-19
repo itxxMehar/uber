@@ -1,12 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.taxiuber">
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
    <application
         android:label="taxiuber"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
        <meta-data android:name="com.google.android.geo.API_KEY"
-           android:value="AIzaSyCJaqf6jZtG9rSfSoUUfyx0jxnvOiwVbfk"/>
+           android:value="AIzaSyD5Bjix7qEzjdHXK6vW98CfHD08fyJSX8g"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

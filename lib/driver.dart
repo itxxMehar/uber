@@ -15,7 +15,7 @@ class driver extends StatefulWidget {
 
 class _driverState extends State<driver> {
   final databaseReference = FirebaseDatabase.instance.reference();
-   Position ?_currentPosition;
+  Position ?_currentPosition;
   late StreamSubscription<Position> _positionStreamSubscription;
   Future<void> requestLocationPermission() async {
     var status = await Permission.location.status;
@@ -51,12 +51,10 @@ class _driverState extends State<driver> {
 
   void _initLocationTracking() {
     _positionStreamSubscription = Geolocator.getPositionStream().listen((position) {
-      setState(() {
-        _currentPosition = position;
-        // Upload the user's location to Firebase Realtime Database
-        uploadLocationToFirebase(position.latitude, position.longitude);
-        addMarkers(position.latitude, position.longitude);
-      });
+      _currentPosition = position;
+      // Upload the user's location to Firebase Realtime Database
+      uploadLocationToFirebase(position.latitude, position.longitude);
+      addMarkers(position.latitude, position.longitude);
     });
   }
 
@@ -70,16 +68,17 @@ class _driverState extends State<driver> {
     });
   }
   var data;
-getloaction () async {
-  await databaseReference.child('users/user2').onValue.listen(( event) {
-    if (event.snapshot.value != null) {
-      print(data);
-      setState(() {
-        data = event.snapshot.value;
-      });
-    }
-  });
-}
+  getloaction () async {
+    await databaseReference.child('users/user2').onValue.listen(( event) {
+      if (event.snapshot.value != null) {
+        print(data);
+        setState(() {
+          data = event.snapshot.value;
+          _initLocationTracking();
+        });
+      }
+    });
+  }
   @override
   void dispose() {
     _positionStreamSubscription.cancel();
@@ -102,33 +101,40 @@ getloaction () async {
       ),
     );
   }
-   GoogleMapController ?mapController;
+  GoogleMapController ?mapController;
   Set<Marker> markers = {};
   void addMarkers(double latitude, double longitude) {
     {
       // Add marker for current location
-      setState(() {
-        markers.add(
-          Marker(
-            markerId: MarkerId("currentLocation"),
-            position: LatLng(latitude, longitude),
-            // Replace with your current location
-            infoWindow: InfoWindow(title: "Current Location"),
-          ),
-        );
+      markers.add(
+        Marker(
+          markerId: MarkerId("currentLocation"),
+          position: LatLng(latitude, longitude),
+          // Replace with your current location
+          infoWindow: InfoWindow(title: "Current Location"),
+        ),
+      );
 
-        // Add marker for the target location
-        markers.add(
-          Marker(
-            markerId: MarkerId("targetLocation"),
-            position: LatLng(
-                data != null ? double.parse(data["latitude"].toString()) : 0.0,
-                data != null ? double.parse(data["longitude"].toString()) : 0.0),
-            // Replace with your target location
-            infoWindow: InfoWindow(title: "Target Location"),
-          ),
-        );
-      });
+      // Add marker for the target location
+      markers.add(
+        Marker(
+          markerId: MarkerId("targetLocation"),
+          position: LatLng(
+              data != null ? double.parse(data["latitude"].toString()) : 0.0,
+              data != null ? double.parse(data["longitude"].toString()) : 0.0),
+          // Replace with your target location
+          infoWindow: InfoWindow(title: "Target Location"),
+        ),
+      );
+      _polylines.add(Polyline(
+        polylineId: PolylineId('polyline_id'),
+        color: Colors.blue,
+        width: 5,
+        points: [LatLng(latitude, longitude), LatLng(
+            data != null ? double.parse(data["latitude"].toString()) : 0.0,
+            data != null ? double.parse(data["longitude"].toString()) : 0.0)],
+      ));
     }
   }
+  Set<Polyline> _polylines = {};
 }

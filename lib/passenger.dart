@@ -53,12 +53,10 @@ class _passengerState extends State<passenger> {
 
   void _initLocationTracking() {
     _positionStreamSubscription = Geolocator.getPositionStream().listen((position) {
-      setState(() {
         _currentPosition = position;
         // Upload the user's location to Firebase Realtime Database
         uploadLocationToFirebase(position.latitude, position.longitude);
         addMarkers(position.latitude, position.longitude);
-      });
     });
   }
 
@@ -78,6 +76,7 @@ class _passengerState extends State<passenger> {
         print(data);
         setState(() {
           data = event.snapshot.value;
+          _initLocationTracking();
         });
       }
     });
@@ -129,6 +128,15 @@ class _passengerState extends State<passenger> {
           infoWindow: InfoWindow(title: "Target Location"),
         ),
       );
+      _polylines.add(Polyline(
+        polylineId: PolylineId('polyline_id'),
+        color: Colors.blue,
+        width: 5,
+        points: [LatLng(latitude, longitude), LatLng(
+            data != null ? double.parse(data["latitude"].toString()) : 0.0,
+            data != null ? double.parse(data["longitude"].toString()) : 0.0)],
+      ));
     }
   }
+  Set<Polyline> _polylines = {};
 }
