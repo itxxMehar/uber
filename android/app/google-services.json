@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "45591126561",
+    "project_id": "ubertest-81642",
+    "storage_bucket": "ubertest-81642.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:45591126561:android:741586d860ecef50783960",
+        "android_client_info": {
+          "package_name": "com.example.taxiuber"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDejspVR5TBEPRRnPW0BNwXCbbT685OAC0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
