@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'driver.dart';
@@ -56,6 +57,7 @@ class _passengerState extends State<passenger> {
         _currentPosition = position;
         // Upload the user's location to Firebase Realtime Database
         uploadLocationToFirebase(position.latitude, position.longitude);
+        addMarkers(position.latitude, position.longitude);
       });
     });
   }
@@ -70,8 +72,8 @@ class _passengerState extends State<passenger> {
     });
   }
   var data;
-  getloaction (){
-    databaseReference.child('users/user1').onValue.listen(( event) {
+  getloaction () async {
+    await databaseReference.child('users/user1').onValue.listen(( event) {
       if (event.snapshot.value != null) {
         print(data);
         setState(() {
@@ -90,14 +92,43 @@ class _passengerState extends State<passenger> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('Latitude: ${data!=null?data["latitude"]:""}'),
-            Text('Longitude: ${data!=null? data["longitude"]:""}'),
-          ],
+        child: GoogleMap(
+          onMapCreated: (controller) {
+            mapController = controller;
+          },
+          initialCameraPosition: CameraPosition(
+            target: LatLng(data!=null?double.parse(data["latitude"].toString()):0.0, data!=null?double.parse( data["longitude"].toString()):0.0), // Initial map location
+          ),
+          markers: markers,
         ),
       ),
     );
+  }
+  GoogleMapController ?mapController;
+  Set<Marker> markers = {};
+  void addMarkers(double latitude, double longitude) {
+    {
+      // Add marker for current location
+      markers.add(
+        Marker(
+          markerId: MarkerId("currentLocation"),
+          position: LatLng(latitude, longitude),
+          // Replace with your current location
+          infoWindow: InfoWindow(title: "Current Location"),
+        ),
+      );
+
+      // Add marker for the target location
+      markers.add(
+        Marker(
+          markerId: MarkerId("targetLocation"),
+          position: LatLng(
+              data != null ? double.parse(data["latitude"].toString()) : 0.0,
+              data != null ? double.parse(data["longitude"].toString()) : 0.0),
+          // Replace with your target location
+          infoWindow: InfoWindow(title: "Target Location"),
+        ),
+      );
+    }
   }
 }
