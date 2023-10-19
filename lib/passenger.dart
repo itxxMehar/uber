@@ -6,10 +6,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'driver.dart';
-
 class passenger extends StatefulWidget {
-  const passenger({super.key});
+  String ide;
+   passenger({super.key,required this.ide});
 
   @override
   State<passenger> createState() => _passengerState();
@@ -63,7 +62,7 @@ class _passengerState extends State<passenger> {
   void uploadLocationToFirebase(double latitude, double longitude) {
     // Replace 'users' with the appropriate Firebase Realtime Database path
     databaseReference.child('users').update({
-      'user2': {
+     widget.ide=="driver"?"user1": 'user2': {
         'latitude': latitude,
         'longitude': longitude,
       },
@@ -71,6 +70,17 @@ class _passengerState extends State<passenger> {
   }
   var data;
   getloaction () async {
+    widget.ide=="driver"?
+    await databaseReference.child('users/user2').onValue.listen(( event) {
+      if (event.snapshot.value != null) {
+        print(data);
+        setState(() {
+          data = event.snapshot.value;
+          _initLocationTracking();
+        });
+      }
+    })
+        :
     await databaseReference.child('users/user1').onValue.listen(( event) {
       if (event.snapshot.value != null) {
         print(data);

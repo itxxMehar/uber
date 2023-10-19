@@ -3,8 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:taxiuber/passenger.dart';
 
-import 'driver.dart';
-
 class login extends StatefulWidget {
   const login({super.key});
 
@@ -84,10 +82,10 @@ class _loginState extends State<login> {
       a.user?.uid=="yYahCWUfGkTJ5QI1gF5ixUSaIL93"?
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const driver()),
+        MaterialPageRoute(builder: (context) =>  passenger(ide: "driver",)),
       ):Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const passenger()),
+        MaterialPageRoute(builder: (context) =>  passenger(ide: "passe",)),
       );
     } catch (e) {
       print('Error during login: $e');
